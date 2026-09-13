@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/toast';
 import { Spinner } from '@/components/ui/spinner';
 import { useDebounce } from '@/lib/hooks/use-debounce';
+import { DeleteAccountSection } from '@/components/profile/delete-account-section';
 
 interface ProfileSettingsModalProps {
   isOpen: boolean;
@@ -512,6 +513,8 @@ export function ProfileSettingsModal({
               </Button>
             </div>
           </form>
+
+          <DeleteAccountSection disabled={isSaving} />
         </CardContent>
       </Card>
     </div>
