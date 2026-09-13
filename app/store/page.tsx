@@ -4,7 +4,7 @@ import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { CoinAmount } from '@/components/ui/coin';
 import { CouponCard } from '@/components/store/coupon-card';
 import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
@@ -117,81 +117,78 @@ export default function StorePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-4 md:py-8 px-4 md:px-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h1 className="text-2xl md:text-4xl font-bold text-text-dark mb-2">
-                Tienda
-              </h1>
-              <p className="text-neutral text-sm">
-                Canjea tus monedas por cupones exclusivos
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 text-primary">
-              <span className="text-lg md:text-xl font-semibold">
-                {storeData.userCoins}
-              </span>
-              <span className="text-sm text-neutral">monedas</span>
-            </div>
+    <div className="min-h-screen bg-background py-4 md:py-8 px-4 md:px-6">
+      <div className="max-w-2xl mx-auto">
+        {/* Cabecera: el saldo va suelto a la derecha, sin cápsula */}
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl md:text-4xl font-bold text-text-dark">Tienda</h1>
+            <p className="mt-1 text-sm text-neutral">Canjea tus monedas por cupones exclusivos</p>
           </div>
+          <CoinAmount amount={storeData.userCoins} size={24} textClassName="text-xl text-text-dark" />
         </div>
 
-        {/* Error Message */}
+        <nav className="mb-4 flex gap-2 text-sm">
+          <span className="inline-flex h-9 items-center rounded-full bg-primary px-4 font-medium text-primary-foreground">
+            Cupones
+          </span>
+          <Link
+            href="/store/purchased"
+            className="inline-flex h-9 items-center rounded-full bg-neutral/10 px-4 font-medium text-text hover:bg-neutral/15"
+          >
+            Mis cupones
+          </Link>
+          <Link
+            href="/store/transactions"
+            className="inline-flex h-9 items-center rounded-full bg-neutral/10 px-4 font-medium text-text hover:bg-neutral/15"
+          >
+            Historial
+          </Link>
+        </nav>
+
         {error && (
-          <div className="mb-6 bg-accent-red/10 border border-accent-red/30 rounded-xl p-4 text-accent-red-dark">
+          <div className="mb-4 rounded-xl border border-accent-red/30 bg-accent-red/10 p-4 text-accent-red-dark">
             {error}
           </div>
         )}
 
-        {/* Search Bar */}
-        <Card className="mb-6 border-neutral/10">
-          <CardContent className="pt-6">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar cupones..."
-              className="w-full px-4 py-3 border border-neutral/20 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-text"
-            />
-          </CardContent>
-        </Card>
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Buscar por marca…"
+          aria-label="Buscar cupones"
+          className="mb-4 h-12 w-full rounded-control border border-neutral/20 bg-white px-4 text-text transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary"
+        />
 
-        {/* Coupons Grid */}
         {storeData.items.length === 0 ? (
-          <Card className="border-neutral/10">
-            <CardContent className="py-12 text-center">
-              <h2 className="text-2xl font-semibold text-text-dark mb-2">
-                No se encontraron cupones
-              </h2>
-              <p className="text-neutral mb-4">
-                Intenta ajustar los filtros o busca con otros términos
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSearchQuery('');
-                }}
-                className="border-primary text-primary hover:bg-primary/5"
-              >
+          <div className="py-16 text-center">
+            <h2 className="mb-2 text-xl font-semibold text-text-dark">
+              {searchQuery ? 'Sin resultados' : 'No hay cupones disponibles'}
+            </h2>
+            <p className="mb-4 text-neutral">
+              {searchQuery
+                ? `No hemos encontrado cupones de «${searchQuery}». Prueba con otra marca.`
+                : 'Vuelve pronto: vamos añadiendo marcas nuevas.'}
+            </p>
+            {searchQuery && (
+              <Button variant="outline" onClick={() => setSearchQuery('')}>
                 Limpiar búsqueda
               </Button>
-            </CardContent>
-          </Card>
+            )}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ul className="divide-y divide-neutral/10 rounded-card border border-neutral/10 bg-white px-4">
             {storeData.items.map((coupon) => (
               <CouponCard
                 key={coupon.id}
                 coupon={coupon}
+                userCoins={storeData.userCoins}
                 onPurchase={handlePurchase}
                 isPurchasing={purchasing}
               />
             ))}
-          </div>
+          </ul>
         )}
       </div>
     </div>

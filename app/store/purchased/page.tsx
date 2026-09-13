@@ -2,12 +2,12 @@
 
 import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CoinAmount } from '@/components/ui/coin';
+import { BrandLogo, CouponCode, formatCouponDate } from '@/components/store/coupon-card';
 import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import Image from 'next/image';
 
 interface PurchasedCoupon {
   purchase: {
@@ -38,7 +38,6 @@ interface PurchasedData {
 }
 
 export default function PurchasedCouponsPage() {
-  const router = useRouter();
   const [data, setData] = useState<PurchasedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -65,19 +64,11 @@ export default function PurchasedCouponsPage() {
     }
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   // Filtrar por búsqueda
   const filteredItems = data?.items.filter(item => {
     if (!item.coupon) return false;
     if (!searchQuery) return true;
-    
+
     const query = searchQuery.toLowerCase();
     return (
       item.coupon.partnerName?.toLowerCase().includes(query) ||
@@ -89,8 +80,7 @@ export default function PurchasedCouponsPage() {
   // Paginación
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedItems = filteredItems.slice(startIndex, endIndex);
+  const paginatedItems = filteredItems.slice(startIndex, startIndex + itemsPerPage);
 
   // Resetear página cuando cambia la búsqueda
   useEffect(() => {
@@ -109,238 +99,128 @@ export default function PurchasedCouponsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600">{error || 'Error al cargar datos'}</p>
+          <p className="text-accent-red">{error || 'Error al cargar datos'}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white py-4 md:py-8 px-4 md:px-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-            <div>
-              <h1 className="text-2xl md:text-4xl font-bold text-text-dark mb-2">
-                Mi Colección
-              </h1>
-              <p className="text-neutral text-sm">
-                Tus cupones comprados y disponibles
-              </p>
-            </div>
-            <Link href="/store">
-              <Button variant="outline" className="border-primary text-primary hover:bg-primary/5">
-                Ir a Tienda
-              </Button>
-            </Link>
-          </div>
+    <div className="min-h-screen bg-background py-4 md:py-8 px-4 md:px-6">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-4xl font-bold text-text-dark">Mis cupones</h1>
+          <p className="mt-1 text-sm text-neutral">Toca un código para copiarlo</p>
         </div>
 
-        {/* Error Message */}
+        <nav className="mb-4 flex gap-2 text-sm">
+          <Link
+            href="/store"
+            className="inline-flex h-9 items-center rounded-full bg-neutral/10 px-4 font-medium text-text hover:bg-neutral/15"
+          >
+            Cupones
+          </Link>
+          <span className="inline-flex h-9 items-center rounded-full bg-primary px-4 font-medium text-primary-foreground">
+            Mis cupones
+          </span>
+          <Link
+            href="/store/transactions"
+            className="inline-flex h-9 items-center rounded-full bg-neutral/10 px-4 font-medium text-text hover:bg-neutral/15"
+          >
+            Historial
+          </Link>
+        </nav>
+
         {error && (
-          <div className="mb-6 bg-accent-red/10 border border-accent-red/30 rounded-xl p-4 text-accent-red-dark">
+          <div className="mb-4 rounded-xl border border-accent-red/30 bg-accent-red/10 p-4 text-accent-red-dark">
             {error}
           </div>
         )}
 
-        {/* Search Bar */}
-        <Card className="mb-6 border-neutral/10">
-          <CardContent className="pt-6">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por empresa, código o descripción..."
-              className="w-full px-4 py-3 border border-neutral/20 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors text-text"
-            />
-            {searchQuery && (
-              <p className="text-sm text-neutral mt-2">
-                {filteredItems.length} resultado{filteredItems.length !== 1 ? 's' : ''} encontrado{filteredItems.length !== 1 ? 's' : ''}
-              </p>
-            )}
-          </CardContent>
-        </Card>
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Buscar por marca, código o descripción…"
+          aria-label="Buscar en mis cupones"
+          className="h-12 w-full rounded-control border border-neutral/20 bg-white px-4 text-text transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+        {searchQuery && (
+          <p className="mt-2 text-sm text-neutral">
+            {filteredItems.length} resultado{filteredItems.length !== 1 ? 's' : ''}
+          </p>
+        )}
 
-        {/* Purchased Coupons Grid */}
         {paginatedItems.length === 0 ? (
-          <Card className="border-neutral/10">
-            <CardContent className="py-12 text-center">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-4xl">📦</span>
-              </div>
-              <h2 className="text-2xl font-semibold text-text-dark mb-2">
-                {searchQuery ? 'No se encontraron resultados' : 'No has comprado ningún cupón'}
-              </h2>
-              <p className="text-neutral mb-6">
-                {searchQuery 
-                  ? 'Intenta buscar con otros términos'
-                  : 'Visita la tienda para comenzar a comprar cupones de descuento'}
-              </p>
-              {!searchQuery && (
-                <Link href="/store">
-                  <Button className="bg-primary hover:bg-primary-dark">
-                    Ir a Tienda
-                  </Button>
-                </Link>
-              )}
-            </CardContent>
-          </Card>
+          <div className="py-16 text-center">
+            <h2 className="mb-2 text-xl font-semibold text-text-dark">
+              {searchQuery ? 'No se encontraron resultados' : 'Todavía no has canjeado ningún cupón'}
+            </h2>
+            <p className="mb-6 text-neutral">
+              {searchQuery
+                ? 'Intenta buscar con otros términos'
+                : 'Completa retos para ganar monedas y canjéalas en la tienda.'}
+            </p>
+            {!searchQuery && (
+              <Link href="/store">
+                <Button>Ir a la tienda</Button>
+              </Link>
+            )}
+          </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <ul className="mt-4 divide-y divide-neutral/10 rounded-card border border-neutral/10 bg-white px-4">
               {paginatedItems.map(({ purchase, coupon, transaction }) => {
-              if (!coupon) return null;
-              
-              const isValid = new Date(coupon.validUntil) > new Date();
-              
-              return (
-                <Card
-                  key={purchase.id}
-                  className={`
-                    relative transition-all hover:shadow-lg border-neutral/10
-                    ${!isValid ? 'opacity-60 border-neutral/20' : 'border-neutral/20'}
-                  `}
-                >
-                  {/* Expired badge */}
-                  {!isValid && (
-                    <div className="absolute top-2 right-2 bg-neutral text-white text-xs px-2 py-1 rounded-full z-10 font-medium">
-                      Expirado
-                    </div>
-                  )}
+                if (!coupon) return null;
 
-                  {/* Discount badge */}
-                  <div className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded-full font-bold z-10 shadow-sm">
-                    -{coupon.discountPercent}%
-                  </div>
+                const isValid = new Date(coupon.validUntil) > new Date();
 
-                  <CardHeader>
-                    {/* Imagen de la marca */}
-                    {coupon.brandImage && (
-                      <div className="flex justify-center mb-3">
-                        <div className="relative w-24 h-24 rounded-xl overflow-hidden">
-                          <Image
-                            src={coupon.brandImage}
-                            alt={coupon.partnerName}
-                            fill
-                            className="object-cover rounded-xl"
-                          />
-                        </div>
+                return (
+                  <li key={purchase.id} className={cn('flex items-start gap-3 py-4', !isValid && 'opacity-60')}>
+                    <BrandLogo src={coupon.brandImage} name={coupon.partnerName} />
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="truncate font-semibold text-text-dark">{coupon.partnerName}</p>
+                        {!isValid && <span className="shrink-0 text-xs text-accent-red">Expirado</span>}
                       </div>
-                    )}
-                    
-                    <CardTitle className="text-center text-lg text-text-dark">
-                      {coupon.partnerName}
-                    </CardTitle>
-                    
-                    <div className="text-center mt-2">
-                      <p className="text-sm font-mono font-semibold text-primary bg-primary/5 px-3 py-1 rounded-lg inline-block">
-                        {coupon.code}
+                      <p className="text-sm font-medium text-brand-gold">{coupon.discountPercent}% de descuento</p>
+                      <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs text-neutral">
+                        <span>Canjeado el {formatCouponDate(purchase.purchasedAt)}</span>
+                        {transaction && (
+                          <>
+                            <span aria-hidden="true">·</span>
+                            <CoinAmount amount={Math.abs(transaction.amount)} size={12} className="gap-1" textClassName="font-medium" />
+                          </>
+                        )}
+                        <span aria-hidden="true">·</span>
+                        <span>Válido hasta {formatCouponDate(coupon.validUntil)}</span>
                       </p>
+                      <CouponCode code={coupon.code} />
                     </div>
-                  </CardHeader>
+                  </li>
+                );
+              })}
+            </ul>
 
-                  <CardContent>
-                    {coupon.description && (
-                      <p className="text-sm text-neutral text-center mb-4 leading-relaxed">
-                        {coupon.description}
-                      </p>
-                    )}
-
-                    <div className="space-y-2.5 text-sm">
-                      <div className="flex items-center justify-between py-1.5 border-b border-neutral/10">
-                        <span className="text-neutral">Descuento:</span>
-                        <span className="font-bold text-complementary-emerald">
-                          {coupon.discountPercent}%
-                        </span>
-                      </div>
-
-                      {transaction && (
-                        <div className="flex items-center justify-between py-1.5 border-b border-neutral/10">
-                          <span className="text-neutral">Precio pagado:</span>
-                          <span className="font-bold text-primary">
-                            {Math.abs(transaction.amount)} monedas
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between py-1.5 border-b border-neutral/10">
-                        <span className="text-neutral">Comprado:</span>
-                        <span className="text-text font-medium">
-                          {formatDate(purchase.purchasedAt)}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between py-1.5">
-                        <span className="text-neutral">Válido hasta:</span>
-                        <span className={`font-medium ${isValid ? 'text-complementary-emerald' : 'text-accent-red'}`}>
-                          {formatDate(coupon.validUntil)}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-
-                  <CardContent className="pt-0">
-                    <div className="p-3 bg-primary/5 border border-primary/20 rounded-xl">
-                      <p className="text-xs font-semibold text-primary mb-1">
-                        Código: {coupon.code}
-                      </p>
-                      <p className="text-xs text-neutral leading-relaxed">
-                        Usa este código en {coupon.partnerName} para obtener un {coupon.discountPercent}% de descuento
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-            </div>
-
-            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-8">
+              <div className="mt-6 flex items-center justify-center gap-2">
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="border-primary text-primary hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Anterior
                 </Button>
-                
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                    if (
-                      page === 1 ||
-                      page === totalPages ||
-                      (page >= currentPage - 1 && page <= currentPage + 1)
-                    ) {
-                      return (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? 'default' : 'outline'}
-                          onClick={() => setCurrentPage(page)}
-                          className={
-                            currentPage === page
-                              ? 'bg-primary hover:bg-primary-dark'
-                              : 'border-primary text-primary hover:bg-primary/5'
-                          }
-                          size="sm"
-                        >
-                          {page}
-                        </Button>
-                      );
-                    } else if (page === currentPage - 2 || page === currentPage + 2) {
-                      return <span key={page} className="px-2 text-neutral">...</span>;
-                    }
-                    return null;
-                  })}
-                </div>
-
+                <span className="px-2 text-sm tabular-nums text-neutral">
+                  {currentPage} de {totalPages}
+                </span>
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
-                  className="border-primary text-primary hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Siguiente
                 </Button>

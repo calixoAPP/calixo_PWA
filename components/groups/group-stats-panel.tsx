@@ -1,60 +1,53 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CoinAmount } from '@/components/ui/coin';
 import type { GroupStats } from '@/types';
 
 interface GroupStatsPanelProps {
   stats: GroupStats;
 }
 
+/** Estadísticas del grupo: las cifras en una franja y el ranking en lista, sin tarjetas. */
 export function GroupStatsPanel({ stats }: GroupStatsPanelProps) {
   return (
-    <div className="p-4 space-y-4">
-      <div className="grid grid-cols-2 gap-3">
-        <Card>
-          <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-primary">{stats.totalChallenges}</p>
-            <p className="text-xs text-gray-500">Retos totales</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-primary">{stats.completedChallenges}</p>
-            <p className="text-xs text-gray-500">Completados</p>
-          </CardContent>
-        </Card>
-        <Card className="col-span-2">
-          <CardContent className="pt-4 text-center">
-            <p className="text-2xl font-bold text-primary">{stats.totalCoinsDistributed}</p>
-            <p className="text-xs text-gray-500">Monedas repartidas en el grupo</p>
-          </CardContent>
-        </Card>
-      </div>
+    <div className="space-y-6 p-4">
+      <dl className="grid grid-cols-3 divide-x divide-neutral/10 rounded-card border border-neutral/10 bg-white py-4 text-center">
+        <div className="flex flex-col-reverse">
+          <dt className="text-xs text-neutral">Retos</dt>
+          <dd className="text-2xl font-bold tabular-nums text-text-dark">{stats.totalChallenges}</dd>
+        </div>
+        <div className="flex flex-col-reverse">
+          <dt className="text-xs text-neutral">Completados</dt>
+          <dd className="text-2xl font-bold tabular-nums text-text-dark">{stats.completedChallenges}</dd>
+        </div>
+        <div className="flex flex-col-reverse">
+          <dt className="text-xs text-neutral">Repartidas</dt>
+          <dd className="flex justify-center">
+            <CoinAmount amount={stats.totalCoinsDistributed} size={20} textClassName="text-2xl font-bold text-text-dark" />
+          </dd>
+        </div>
+      </dl>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Ranking de victorias</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {stats.ranking.length === 0 ? (
-            <p className="text-sm text-gray-500 text-center py-4">Sin datos aún</p>
-          ) : (
-            <ul className="space-y-2">
-              {stats.ranking.map((member, i) => (
-                <li key={member.userId} className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-2">
-                    <span className="text-gray-400 w-5">{i + 1}.</span>
-                    {member.displayName}
-                  </span>
-                  <span className="text-gray-500">
-                    {member.wins}W · {member.successRate}%
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+      <section>
+        <h3 className="mb-2 text-sm font-semibold text-text-dark">Ranking de victorias</h3>
+        {stats.ranking.length === 0 ? (
+          <p className="py-4 text-center text-sm text-neutral">Sin datos aún</p>
+        ) : (
+          <ol className="divide-y divide-neutral/10 rounded-card border border-neutral/10 bg-white px-4">
+            {stats.ranking.map((member, i) => (
+              <li key={member.userId} className="flex items-center justify-between py-3 text-sm">
+                <span className="flex min-w-0 items-center gap-3">
+                  <span className="w-5 tabular-nums text-neutral">{i + 1}</span>
+                  <span className="truncate text-text-dark">{member.displayName}</span>
+                </span>
+                <span className="shrink-0 tabular-nums text-neutral">
+                  {member.wins} {member.wins === 1 ? 'victoria' : 'victorias'} · {member.successRate}%
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
     </div>
   );
 }

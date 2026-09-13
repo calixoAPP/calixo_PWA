@@ -1,9 +1,10 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { CoinIcon } from '@/components/ui/coin';
+import { cn } from '@/lib/utils';
 
 interface CouponCardProps {
   coupon: {
@@ -21,182 +22,119 @@ interface CouponCardProps {
     canPurchase?: boolean;
     isOutOfStock?: boolean;
   };
+  /** Saldo del usuario, para decir cuántas monedas faltan. */
+  userCoins?: number;
   onPurchase: (couponId: number) => void;
   isPurchasing: boolean;
 }
 
-export function CouponCard({ coupon, onPurchase, isPurchasing }: CouponCardProps) {
-  const formatDate = (date: string) => {
-    const dateObj = new Date(date);
-    const now = new Date();
-    const diffDays = Math.ceil((dateObj.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays < 0) {
-      return 'Expirado';
-    }
-    if (diffDays <= 7) {
-      return `Vence en ${diffDays} día${diffDays !== 1 ? 's' : ''}`;
-    }
-    
-    return dateObj.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
+export function formatCouponDate(date: string) {
+  return new Date(date).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+}
 
-  const isOutOfStock = coupon.isOutOfStock || false;
-  const stockInfo = coupon.maxUses !== null && coupon.maxUses > 0 
-    ? `${coupon.maxUses - coupon.currentUses} disponibles`
-    : null;
+/** Un cupón de la tienda como fila de lista: marca a la izquierda y precio a la derecha. */
+export function CouponCard({ coupon, userCoins, onPurchase, isPurchasing }: CouponCardProps) {
+  const isOutOfStock = coupon.isOutOfStock ?? false;
+  const remaining = coupon.maxUses ? Math.max(0, coupon.maxUses - coupon.currentUses) : null;
+  const missing = userCoins === undefined ? 0 : Math.max(0, coupon.price - userCoins);
+  const isAvailable = (coupon.canPurchase ?? true) && missing === 0;
 
   return (
-    <Card className={`
-      relative transition-all hover:shadow-lg border-neutral/10
-      ${coupon.owned ? 'opacity-60 border-complementary-emerald/30' : isOutOfStock ? 'opacity-50 border-accent-red/30' : 'border-neutral/20'}
-    `}>
-      {/* Owned badge */}
-      {coupon.owned && (
-        <div className="absolute top-2 left-2 bg-complementary-emerald text-white text-xs px-2 py-1 rounded-full z-10 font-medium">
-          Comprado
-        </div>
-      )}
+    <li className="flex items-start gap-3 py-4">
+      <BrandLogo src={coupon.brandImage} name={coupon.partnerName} />
 
-      {/* Out of stock badge */}
-      {isOutOfStock && !coupon.owned && (
-        <div className="absolute top-2 left-2 bg-accent-red text-white text-xs px-2 py-1 rounded-full z-10 font-medium">
-          Agotado
-        </div>
-      )}
-
-      {/* Discount badge */}
-      <div className="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full font-bold z-10 shadow-sm">
-        -{coupon.discountPercent}%
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-semibold text-text-dark">{coupon.partnerName}</p>
+        <p className="text-sm font-medium text-brand-gold">{coupon.discountPercent}% de descuento</p>
+        {coupon.description && (
+          <p className="mt-0.5 line-clamp-2 text-sm text-neutral">{coupon.description}</p>
+        )}
+        <p className="mt-1 text-xs text-neutral-light">
+          Hasta {formatCouponDate(coupon.validUntil)}
+          {remaining !== null && ` · ${remaining === 1 ? 'Queda' : 'Quedan'} ${remaining}`}
+        </p>
       </div>
 
-      <CardHeader>
-        {/* Imagen de la marca */}
-        {coupon.brandImage && (
-          <div className="flex justify-center mb-3">
-            <div className="relative w-24 h-24 rounded-xl overflow-hidden">
-              <Image
-                src={coupon.brandImage}
-                alt={coupon.partnerName}
-                fill
-                className="object-cover rounded-xl"
-              />
-            </div>
-          </div>
-        )}
-        
-        <CardTitle className="text-center text-lg text-text-dark">
-          {coupon.partnerName}
-        </CardTitle>
-        
-        {/* Solo mostrar código si está comprado */}
-        {coupon.owned && (
-          <div className="text-center mt-2">
-            <p className="text-sm font-mono font-semibold text-primary bg-primary/5 px-3 py-1 rounded-lg inline-block">
-              {coupon.code}
-            </p>
-          </div>
-        )}
-      </CardHeader>
-
-      <CardContent>
-        {/* Descripción completa */}
-        {coupon.description && (
-          <p className="text-sm text-neutral text-center mb-4 min-h-[2.5rem] leading-relaxed">
-            {coupon.description}
-          </p>
-        )}
-
-        <div className="space-y-2.5 text-sm">
-          <div className="flex items-center justify-between py-1.5 border-b border-neutral/10">
-            <span className="text-neutral">Descuento:</span>
-            <span className="font-bold text-complementary-emerald">
-              {coupon.discountPercent}%
-            </span>
-          </div>
-          
-          {/* Fecha de validez visible */}
-          <div className="flex items-center justify-between py-1.5 border-b border-neutral/10">
-            <span className="text-neutral">Válido hasta:</span>
-            <span className="text-text font-medium">
-              {formatDate(coupon.validUntil)}
-            </span>
-          </div>
-          
-          {/* Stock disponible */}
-          {stockInfo && !coupon.owned && (
-            <div className="flex items-center justify-between py-1.5">
-              <span className="text-neutral">Disponibles:</span>
-              <span className={`font-medium ${coupon.currentUses >= (coupon.maxUses || 0) ? 'text-accent-red' : 'text-complementary-turquoise'}`}>
-                {stockInfo}
-              </span>
-            </div>
-          )}
-        </div>
-      </CardContent>
-
-      <CardFooter className="flex flex-col gap-3">
-        {/* Precio en monedas - más visible */}
-        <div className="text-center w-full bg-primary/5 rounded-xl py-3 px-4 border border-primary/20">
-          <div className="flex items-center justify-center gap-1.5">
-            <span className="text-xl font-bold text-primary">
-              {coupon.price === 0 ? 'Gratis' : coupon.price}
-            </span>
-            {coupon.price > 0 && (
-              <span className="text-sm text-primary/70 font-medium">monedas</span>
-            )}
-          </div>
-        </div>
-
+      <div className="flex shrink-0 flex-col items-end gap-1">
         {coupon.owned ? (
-          <div className="w-full space-y-2">
-            <Button variant="outline" disabled className="w-full border-complementary-emerald/30 text-complementary-emerald">
-              Ya lo tienes
-            </Button>
-            <Link href="/store/purchased" className="block">
-              <Button variant="ghost" size="sm" className="w-full text-xs text-primary hover:bg-primary/5">
-                Ver en mi colección →
-              </Button>
-            </Link>
-          </div>
+          <Link href="/store/purchased" className="text-sm text-neutral hover:text-text-dark">
+            ✓ Tuyo
+          </Link>
         ) : isOutOfStock ? (
-          <div className="w-full">
-            <Button variant="outline" disabled className="w-full border-accent-red/30 text-accent-red">
-              Agotado
-            </Button>
-            <p className="text-xs text-neutral text-center mt-1.5">
-              No hay más disponibles
-            </p>
-          </div>
-        ) : coupon.canPurchase ? (
-          <Button
-            onClick={() => onPurchase(coupon.id)}
-            disabled={isPurchasing}
-            className="w-full bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl transition-colors shadow-sm hover:shadow-md"
-          >
-            {isPurchasing ? (
-              <span className="flex items-center gap-2">
-                Comprando...
+          <span className="text-sm text-neutral">Agotado</span>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => onPurchase(coupon.id)}
+              disabled={isPurchasing || !isAvailable}
+              aria-label={`Canjear por ${coupon.price} monedas`}
+              className={cn(
+                'inline-flex h-9 min-w-[4rem] items-center justify-center gap-1.5 rounded-full px-3.5 text-sm font-semibold tabular-nums transition-colors',
+                // Sin saldo suficiente el precio se sigue leyendo, pero sin pinta de botón.
+                isAvailable
+                  ? 'bg-primary text-primary-foreground hover:bg-primary-dark'
+                  : 'cursor-not-allowed bg-neutral/10 text-neutral'
+              )}
+            >
+              {isPurchasing ? (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : (
+                <>
+                  <CoinIcon size={16} />
+                  {coupon.price}
+                </>
+              )}
+            </button>
+            {missing > 0 ? (
+              <span className="text-xs text-neutral">
+                Te {missing === 1 ? 'falta' : 'faltan'} {missing}
               </span>
             ) : (
-              <span>Comprar cupón</span>
+              !coupon.canPurchase && <span className="text-xs text-neutral">No disponible</span>
             )}
-          </Button>
-        ) : (
-          <div className="w-full">
-            <Button variant="outline" disabled className="w-full border-neutral/20 text-neutral">
-              No disponible
-            </Button>
-            <p className="text-xs text-neutral text-center mt-1.5">
-              Monedas insuficientes
-            </p>
-          </div>
+          </>
         )}
-      </CardFooter>
-    </Card>
+      </div>
+    </li>
+  );
+}
+
+/** Logo de la marca o, si no tiene, su inicial. */
+export function BrandLogo({ src, name }: { src: string | null; name: string }) {
+  return (
+    <div className="relative flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-neutral/10">
+      <span className="text-lg font-semibold text-neutral">{name.charAt(0).toUpperCase()}</span>
+      {src && <Image src={src} alt={name} fill sizes="52px" className="object-cover" />}
+    </div>
+  );
+}
+
+/** Código de un cupón canjeado, en una "entrada" de borde discontinuo que se copia al tocarla. */
+export function CouponCode({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Sin permiso de portapapeles el código sigue a la vista para copiarlo a mano.
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      aria-label={`Copiar código ${code}`}
+      className="mt-3 flex h-11 w-full items-center justify-between rounded-xl border border-dashed border-neutral/40 px-3.5 text-left transition-colors hover:bg-neutral/5"
+    >
+      <span className="font-mono text-base font-semibold tracking-wider text-text-dark">{code}</span>
+      <span className={cn('text-sm', copied ? 'text-brand-gold' : 'text-neutral')}>
+        {copied ? 'Copiado' : 'Copiar'}
+      </span>
+    </button>
   );
 }

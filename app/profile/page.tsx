@@ -1,5 +1,6 @@
 'use client';
 
+import { CoinAmount } from '@/components/ui/coin';
 import { apiFetch } from '@/lib/api/client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -239,10 +240,7 @@ export default function ProfilePage() {
                 </div>
               </button>
               {/* Monedas debajo de la foto - solo móvil */}
-              <div className="flex sm:hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-                <span className="text-primary font-semibold text-sm">{profile.coins}</span>
-                <span className="text-neutral text-xs">monedas</span>
-              </div>
+              <CoinAmount amount={profile.coins} size={18} className="sm:hidden" textClassName="text-text-dark" />
             </div>
 
             {/* Nombre + badge + ajustes + monedas (desktop) + stats */}
@@ -283,10 +281,12 @@ export default function ProfilePage() {
                 </button>
                 </div>
                 {/* Monedas a la derecha - solo desktop */}
-                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 flex-shrink-0">
-                  <span className="text-primary font-semibold text-base">{profile.coins}</span>
-                  <span className="text-neutral text-sm">monedas</span>
-                </div>
+                <CoinAmount
+                  amount={profile.coins}
+                  size={20}
+                  className="hidden sm:inline-flex flex-shrink-0"
+                  textClassName="text-lg text-text-dark"
+                />
               </div>
 
               {/* Stats: Retos, Seguidores, Siguiendo - compactos en móvil */}
