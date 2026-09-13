@@ -1,11 +1,8 @@
+'use client';
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-
-export const metadata = {
-  title: 'Sin Conexión - Calixo',
-  description: 'No hay conexión a internet disponible',
-};
 
 export default function OfflinePage() {
   return (
@@ -22,7 +19,7 @@ export default function OfflinePage() {
 
         <CardContent className="space-y-6">
           {/* What's available */}
-          <div className="bg-primary/10 border border-soft-blue/20 rounded-lg p-6">
+          <div className="bg-brand-yellow/10 border border-neutral-lighter rounded-lg p-6">
             <h3 className="font-semibold text-text-dark font-serif mb-3 flex items-center gap-2">
               Disponible offline:
             </h3>
@@ -33,7 +30,7 @@ export default function OfflinePage() {
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-complementary-emerald">●</span>
-                Tu perfil y avatar CALI
+                Tu perfil
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-complementary-emerald">●</span>

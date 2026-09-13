@@ -63,9 +63,3 @@ export async function requireModerator(): Promise<boolean> {
   const permissions = await checkAdminPermissions();
   return permissions.isModerator;
 }
-
-/**
- * Export AdminRole type for use in components
- */
-export type { AdminRole };
-

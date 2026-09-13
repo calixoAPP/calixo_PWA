@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -35,7 +36,7 @@ export function ConfigForm() {
 
   const fetchConfig = async () => {
     try {
-      const response = await fetch('/api/admin/config');
+      const response = await apiFetch('/api/admin/config');
       if (response.ok) {
         const data = await response.json();
         setConfig((prev) => ({ ...prev, ...data }));
@@ -53,7 +54,7 @@ export function ConfigForm() {
     setError(null);
 
     try {
-      const response = await fetch('/api/admin/config', {
+      const response = await apiFetch('/api/admin/config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config),

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -51,7 +52,7 @@ export default function PurchasedCouponsPage() {
 
   const fetchPurchasedCoupons = async () => {
     try {
-      const response = await fetch('/api/store/purchased');
+      const response = await apiFetch('/api/store/purchased');
       if (!response.ok) {
         throw new Error('Error al cargar cupones comprados');
       }

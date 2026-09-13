@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -35,7 +36,7 @@ export function NotificationBadge() {
 
   const fetchUnseenCount = async () => {
     try {
-      const response = await fetch('/api/notifications?unseenOnly=true&limit=100');
+      const response = await apiFetch('/api/notifications?unseenOnly=true&limit=100');
       
       // Si es 401, el usuario no está autenticado, simplemente no mostrar badge
       if (response.status === 401) {

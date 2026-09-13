@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -56,7 +57,7 @@ export function ModerationQueue() {
 
   const fetchReports = async () => {
     try {
-      const response = await fetch('/api/admin/moderation/queue');
+      const response = await apiFetch('/api/admin/moderation/queue');
       if (response.ok) {
         const data = await response.json();
         setReports(data);
@@ -70,7 +71,7 @@ export function ModerationQueue() {
 
   const fetchHiddenPosts = async () => {
     try {
-      const response = await fetch('/api/admin/moderation/hidden');
+      const response = await apiFetch('/api/admin/moderation/hidden');
       if (response.ok) {
         const data = await response.json();
         setHiddenPosts(data);
@@ -106,7 +107,7 @@ export function ModerationQueue() {
     setError(null);
 
     try {
-      const response = await fetch(`/api/admin/moderation/${modalReport.id}/resolve`, {
+      const response = await apiFetch(`/api/admin/moderation/${modalReport.id}/resolve`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -134,7 +135,7 @@ export function ModerationQueue() {
   const handleRestore = async (feedItemId: number) => {
     setRestoringId(feedItemId);
     try {
-      const response = await fetch('/api/admin/moderation/restore', {
+      const response = await apiFetch('/api/admin/moderation/restore', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ feedItemId }),

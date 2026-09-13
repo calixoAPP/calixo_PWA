@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -70,7 +71,7 @@ export default function FeedPage() {
 
   const fetchCurrentUser = async () => {
     try {
-      const response = await fetch('/api/profile');
+      const response = await apiFetch('/api/profile');
       if (response.ok) {
         const data = await response.json();
         setCurrentUserId(data.profile?.userId);

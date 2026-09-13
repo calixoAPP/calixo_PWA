@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -140,7 +141,7 @@ export function CreateGroupFlow() {
     let cancelled = false;
     setLoadingSearch(true);
 
-    fetch(`/api/users/search?q=${encodeURIComponent(debouncedSearch)}`)
+    apiFetch(`/api/users/search?q=${encodeURIComponent(debouncedSearch)}`)
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {
         if (cancelled) return;
@@ -232,7 +233,7 @@ export function CreateGroupFlow() {
     if (!name.trim()) return;
     setCreating(true);
     try {
-      const response = await fetch('/api/groups', {
+      const response = await apiFetch('/api/groups', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

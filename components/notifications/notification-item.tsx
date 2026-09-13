@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -57,7 +58,7 @@ export function NotificationItem({ notification, onRefresh, onShareChallenge }: 
     
     setIsProcessing(true);
     try {
-      const response = await fetch(`/api/follow/requests/${payload.requestId}`, {
+      const response = await apiFetch(`/api/follow/requests/${payload.requestId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action }),
@@ -212,7 +213,7 @@ export function NotificationItem({ notification, onRefresh, onShareChallenge }: 
         icon: '',
         title: 'Compra exitosa',
         message: `Compraste: ${payload.itemName}`,
-        link: '/avatar',
+        link: '/store/purchased',
         hasActions: false,
       };
     }
@@ -350,19 +351,11 @@ export function NotificationItem({ notification, onRefresh, onShareChallenge }: 
           {/* Botón para compartir reto desde notificación */}
           {content?.hasActions && content.actionType === 'share_reminder' && (
             <div className="flex flex-col sm:flex-row gap-2 mt-3">
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => {
-                  // Abrir modal de compartir directamente
-                  if (onShareChallenge) {
-                    onShareChallenge(notification);
-                  }
-                }}
-                className="flex-1 text-xs md:text-sm"
-              >
-                Compartir ahora
-              </Button>
+              <Link href="/challenges" className="flex-1">
+                <Button variant="default" size="sm" className="w-full text-xs md:text-sm">
+                  Usar la app móvil
+                </Button>
+              </Link>
             </div>
           )}
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import { ProfilePostCard } from '@/components/profile/profile-post-card';
 import { useToast } from '@/components/ui/toast';
 import { Spinner } from '@/components/ui/spinner';
 import { FollowersModal } from '@/components/profile/followers-modal';
-import { EnergyBanner } from '@/components/profile/energy-banner';
 import { PremiumBadge } from '@/components/profile/premium-badge';
 import { ReportUserModal } from '@/components/profile/report-user-modal';
 import Image from 'next/image';
@@ -97,7 +97,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
 
   const fetchCurrentUser = async () => {
     try {
-      const response = await fetch('/api/profile');
+      const response = await apiFetch('/api/profile');
       if (response.ok) {
         const data = await response.json();
         setCurrentUserId(data.profile?.userId);
@@ -112,7 +112,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
       setLoading(true);
       setError('');
       
-      const response = await fetch(`/api/profile/${userId}`, { cache: 'no-store' });
+      const response = await apiFetch(`/api/profile/${userId}`, { cache: 'no-store' });
       
       if (!response.ok) {
         if (response.status === 404) {
@@ -176,7 +176,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
 
   const handleFollow = async () => {
     try {
-      const response = await fetch('/api/follow', {
+      const response = await apiFetch('/api/follow', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -202,7 +202,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
 
   const handleMessage = async () => {
     try {
-      const response = await fetch('/api/messages/conversations', {
+      const response = await apiFetch('/api/messages/conversations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipientId: userId }),
@@ -390,12 +390,6 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
             </div>
           </div>
         </div>
-
-        {/* Banner de energía (de esa persona); sin CTA de retos cuando no es tu perfil) */}
-        <EnergyBanner
-          energy={profileData.profile.avatarEnergy}
-          showChallengesCta={isOwnProfile}
-        />
 
         <FollowersModal
           isOpen={followersModalOpen}

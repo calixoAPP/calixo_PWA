@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -40,21 +41,21 @@ export function FollowersModal({ isOpen, type, userId, onClose }: FollowersModal
   const fetchPage = useCallback(
     async (offset: number, append: boolean) => {
       const url = `${endpoint}?limit=${PAGE_SIZE}&offset=${offset}`;
-      const res = await fetch(url);
+      const res = await apiFetch(url);
       const data = await res.json();
 
       if (!res.ok) {
         throw new Error(data.error || 'Error al cargar');
       }
 
-      const newUsers = data.users || [];
+      const newUsers: FollowUser[] = data.users || [];
       const totalVal = data.total ?? 0;
       const hasMoreVal = data.hasMore ?? false;
 
       if (append) {
         setUsers((prev) => {
           const existingIds = new Set(prev.map((u) => u.userId));
-          const unique = newUsers.filter((u) => !existingIds.has(u.userId));
+          const unique = newUsers.filter((u: FollowUser) => !existingIds.has(u.userId));
           return [...prev, ...unique];
         });
       } else {
@@ -108,13 +109,13 @@ export function FollowersModal({ isOpen, type, userId, onClose }: FollowersModal
       let hasMoreLocal = hasMore;
       while (hasMoreLocal) {
         const url = `${endpoint}?limit=${PAGE_SIZE}&offset=${offset}`;
-        const res = await fetch(url);
+        const res = await apiFetch(url);
         const data = await res.json();
         if (!res.ok || !data.users?.length) break;
 
         setUsers((prev) => {
           const existingIds = new Set(prev.map((u) => u.userId));
-          const unique = (data.users || []).filter((u) => !existingIds.has(u.userId));
+          const unique = ((data.users || []) as FollowUser[]).filter((u) => !existingIds.has(u.userId));
           return [...prev, ...unique];
         });
         hasMoreLocal = data.hasMore ?? false;

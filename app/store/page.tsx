@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -53,7 +54,7 @@ export default function StorePage() {
       const params = new URLSearchParams();
       if (searchQuery) params.append('search', searchQuery);
 
-      const response = await fetch(`/api/store?${params}`);
+      const response = await apiFetch(`/api/store?${params}`);
       if (!response.ok) {
         throw new Error('Error al cargar la tienda');
       }
@@ -73,7 +74,7 @@ export default function StorePage() {
     setError('');
 
     try {
-      const response = await fetch('/api/store/purchase', {
+      const response = await apiFetch('/api/store/purchase', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ couponId }),

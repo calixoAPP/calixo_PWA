@@ -12,6 +12,8 @@ export type AuthActionState = {
   success?: boolean;
   message?: string;
   userId?: string;
+  email?: string;
+  emailConfirmed?: boolean;
 };
 
 /**
@@ -30,7 +32,7 @@ export async function login(
 
     if (!validatedFields.success) {
       return {
-        error: validatedFields.error.errors[0].message,
+        error: validatedFields.error.issues[0].message,
         success: false,
       };
     }
@@ -179,7 +181,7 @@ export async function login(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
-        error: error.errors[0].message,
+        error: error.issues[0].message,
         success: false,
       };
     }
@@ -216,12 +218,19 @@ export async function signup(
 
       if (!validatedFields.success) {
         return {
-          error: validatedFields.error.errors[0].message,
+          error: validatedFields.error.issues[0].message,
           success: false,
         };
       }
 
       const { email, password, displayName } = validatedFields.data;
+
+      if (!email || !password) {
+        return {
+          error: 'Email y contraseña son obligatorios',
+          success: false,
+        };
+      }
 
       // Sign up (Supabase will handle duplicate email check)
       const { data, error } = await supabase.auth.signUp({
@@ -475,7 +484,7 @@ export async function signup(
     console.error('Error in signup action:', error);
     if (error instanceof z.ZodError) {
       return {
-        error: error.errors[0].message,
+        error: error.issues[0].message,
         success: false,
       };
     }
@@ -537,7 +546,7 @@ export async function resetPassword(
 
     if (!validatedFields.success) {
       return {
-        error: validatedFields.error.errors[0].message,
+        error: validatedFields.error.issues[0].message,
         success: false,
       };
     }

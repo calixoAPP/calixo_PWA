@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { AvatarPreview } from '@/components/avatar/avatar-preview';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import type { ConversationPreview } from '@/types';
 
 interface ConversationListProps {
@@ -37,7 +37,11 @@ export function ConversationList({ conversations, onStartChat }: ConversationLis
           className="flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors"
         >
           <div className="relative flex-shrink-0">
-            <AvatarPreview energyLevel="alta" equippedItems={{}} size="sm" />
+            <UserAvatar
+              displayName={conv.otherUser?.displayName}
+              profilePhotoUrl={null}
+              size="sm"
+            />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-baseline">

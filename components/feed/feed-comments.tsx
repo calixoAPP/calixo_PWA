@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,7 +41,7 @@ export function FeedComments({ feedItemId, currentUserId, onCommentAdded, isExpa
   const fetchComments = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/feed/${feedItemId}/comments`);
+      const response = await apiFetch(`/api/feed/${feedItemId}/comments`);
       if (response.ok) {
         const data = await response.json();
         setComments(data.comments || []);
@@ -58,7 +59,7 @@ export function FeedComments({ feedItemId, currentUserId, onCommentAdded, isExpa
 
     setSubmitting(true);
     try {
-      const response = await fetch(`/api/feed/${feedItemId}/comments`, {
+      const response = await apiFetch(`/api/feed/${feedItemId}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ comment: commentText.trim() }),

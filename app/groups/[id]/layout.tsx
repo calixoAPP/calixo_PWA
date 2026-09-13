@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { use, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -22,7 +23,7 @@ export default function GroupLayout({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/groups/${groupId}`)
+    apiFetch(`/api/groups/${groupId}`)
       .then((r) => {
         if (!r.ok) throw new Error('not found');
         return r.json();

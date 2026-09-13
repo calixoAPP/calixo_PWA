@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,13 +23,17 @@ export function NewsletterForm() {
     setMessage('');
 
     try {
-      const response = await fetch('/api/newsletter/subscribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await apiFetch(
+        '/api/newsletter/subscribe',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
         },
-        body: JSON.stringify({ email }),
-      });
+        false
+      );
 
       const data = await response.json();
 
@@ -62,7 +67,7 @@ export function NewsletterForm() {
         <Button
           type="submit"
           disabled={status === 'loading'}
-          className="bg-primary hover:bg-primary-dark text-white px-6"
+          className="bg-primary hover:bg-primary-dark text-primary-foreground px-6"
         >
           {status === 'loading' ? '...' : 'Suscribir'}
         </Button>

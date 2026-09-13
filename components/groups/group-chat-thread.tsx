@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { MessageBubble } from '@/components/messages/message-bubble';
 import { MessageComposer } from '@/components/messages/message-composer';
@@ -19,14 +20,14 @@ export function GroupChatThread({ groupId }: GroupChatThreadProps) {
 
   const fetchMessages = useCallback(async () => {
     try {
-      const response = await fetch(`/api/groups/${groupId}/messages`);
+      const response = await apiFetch(`/api/groups/${groupId}/messages`);
       if (response.ok) {
         const data = await response.json();
         setMessages(data.messages || []);
 
         const lastMsg = data.messages?.[data.messages.length - 1];
         if (lastMsg) {
-          await fetch(`/api/groups/${groupId}/read`, {
+          await apiFetch(`/api/groups/${groupId}/read`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lastReadMessageId: lastMsg.id }),
@@ -51,7 +52,7 @@ export function GroupChatThread({ groupId }: GroupChatThreadProps) {
   }, [messages]);
 
   const handleSend = async (content: string) => {
-    const response = await fetch(`/api/groups/${groupId}/messages`, {
+    const response = await apiFetch(`/api/groups/${groupId}/messages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content }),
@@ -68,7 +69,7 @@ export function GroupChatThread({ groupId }: GroupChatThreadProps) {
 
   const handleDelete = async (messageId: number) => {
     try {
-      const response = await fetch(`/api/groups/${groupId}/messages/${messageId}`, {
+      const response = await apiFetch(`/api/groups/${groupId}/messages/${messageId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

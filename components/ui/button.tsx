@@ -8,13 +8,13 @@ const buttonVariants = cva(
   {
       variants: {
         variant: {
-          default: "bg-primary text-white hover:bg-primary-dark focus-visible:ring-primary",
-          secondary: "bg-white text-text border-2 border-primary hover:bg-primary/5 focus-visible:ring-primary",
-          success: "bg-complementary-emerald text-white hover:bg-complementary-emerald-dark focus-visible:ring-complementary-emerald",
+          default: "bg-primary text-primary-foreground hover:bg-primary-dark focus-visible:ring-brand-gold",
+          secondary: "bg-background-surface text-text border-2 border-neutral-lighter hover:bg-background focus-visible:ring-brand-gold",
+          success: "bg-accent-green text-white hover:bg-accent-green-dark focus-visible:ring-accent-green",
           destructive: "bg-accent-red text-white hover:bg-accent-red-dark focus-visible:ring-accent-red",
-          outline: "border-2 border-primary/30 bg-transparent hover:bg-primary/5 focus-visible:ring-primary",
-          ghost: "hover:bg-primary/10 hover:text-primary focus-visible:ring-primary",
-          link: "text-primary underline-offset-4 hover:underline focus-visible:ring-primary",
+          outline: "border-2 border-neutral-lighter bg-transparent hover:bg-background focus-visible:ring-brand-gold",
+          ghost: "hover:bg-brand-yellow/20 hover:text-text-dark focus-visible:ring-brand-gold",
+          link: "text-brand-gold underline-offset-4 hover:underline focus-visible:ring-brand-gold",
         },
       size: {
         default: "h-11 px-6 py-3",

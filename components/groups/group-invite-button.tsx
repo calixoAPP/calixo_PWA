@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,7 +25,7 @@ export function GroupInviteButton({ groupId, label = 'Invitar', className, onInv
     if (query.length < 2) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
+      const res = await apiFetch(`/api/users/search?q=${encodeURIComponent(query)}`);
       const data = await res.json();
       setResults((data.users || []).map((u: { userId: string; displayName: string }) => ({
         userId: u.userId,
@@ -37,7 +38,7 @@ export function GroupInviteButton({ groupId, label = 'Invitar', className, onInv
 
   const invite = async (inviteeId: string) => {
     try {
-      const res = await fetch(`/api/groups/${groupId}/invite`, {
+      const res = await apiFetch(`/api/groups/${groupId}/invite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ inviteeId }),

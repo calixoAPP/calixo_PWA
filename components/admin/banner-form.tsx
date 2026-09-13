@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,7 @@ export function BannerForm({ editing }: BannerFormProps) {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch('/api/admin/banners/upload', {
+      const res = await apiFetch('/api/admin/banners/upload', {
         method: 'POST',
         body: formData,
       });

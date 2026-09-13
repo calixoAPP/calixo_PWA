@@ -1,13 +1,5 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-
-/** Redirige a /challenges para compatibilidad con enlaces antiguos */
-export default function DailyRedirectPage() {
-  const router = useRouter();
-  useEffect(() => {
-    router.replace('/challenges');
-  }, [router]);
-  return null;
+export default function DailyChallengesPage() {
+  redirect('/challenges');
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { use, useEffect, useState } from 'react';
 import { GroupStatsPanel } from '@/components/groups/group-stats-panel';
 import { Spinner } from '@/components/ui/spinner';
@@ -11,7 +12,7 @@ export default function GroupStatsPage({ params }: { params: Promise<{ id: strin
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/groups/${groupId}/stats`)
+    apiFetch(`/api/groups/${groupId}/stats`)
       .then((r) => r.json())
       .then((data) => setStats(data.stats))
       .catch(console.error)

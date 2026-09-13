@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -66,7 +67,7 @@ export default function PostPage() {
 
   const fetchCurrentUser = async () => {
     try {
-      const response = await fetch('/api/profile');
+      const response = await apiFetch('/api/profile');
       if (response.ok) {
         const data = await response.json();
         setCurrentUserId(data.profile?.userId);
@@ -81,7 +82,7 @@ export default function PostPage() {
       setLoading(true);
       setError('');
       
-      const response = await fetch(`/api/feed/${params.id}`);
+      const response = await apiFetch(`/api/feed/${params.id}`);
       
       if (!response.ok) {
         if (response.status === 404) {

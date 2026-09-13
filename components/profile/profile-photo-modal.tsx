@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +14,7 @@ interface ProfilePhotoModalProps {
   isOpen: boolean;
   currentPhotoUrl: string | null;
   onClose: () => void;
-  onPhotoUpdated: (photoUrl?: string) => void;
+  onPhotoUpdated: (photoUrl?: string | null) => void;
 }
 
 type ModalStep = 'select' | 'crop' | 'preview';
@@ -145,7 +146,7 @@ export function ProfilePhotoModal({
         formData.append('file', imageFile);
       }
 
-      const uploadResponse = await fetch('/api/profile/photo', {
+      const uploadResponse = await apiFetch('/api/profile/photo', {
         method: 'POST',
         body: formData,
       });
@@ -175,7 +176,7 @@ export function ProfilePhotoModal({
     setError('');
 
     try {
-      const response = await fetch('/api/profile/photo', {
+      const response = await apiFetch('/api/profile/photo', {
         method: 'DELETE',
       });
 

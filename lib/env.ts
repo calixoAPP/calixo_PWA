@@ -5,16 +5,18 @@ import { z } from 'zod';
  * Validates all required env vars at build time
  */
 const envSchema = z.object({
-  // Supabase
+  // Supabase (auth)
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
-  
-  // Stripe
-  STRIPE_SECRET_KEY: z.string().startsWith('sk_'),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().startsWith('pk_'),
-  
+
+  // Backend API (calixo_backend)
+  NEXT_PUBLIC_API_BASE_URL: z.string().url(),
+
+  // App store links (mobile-only features)
+  NEXT_PUBLIC_IOS_APP_URL: z.string().url().optional(),
+  NEXT_PUBLIC_ANDROID_APP_URL: z.string().url().optional(),
+
   // App
   APP_ENV: z.enum(['PRE', 'PRO', 'CAJA']).default('PRE'),
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
@@ -31,7 +33,7 @@ export function getEnv(): Env {
     return envSchema.parse(process.env);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const missingVars = error.errors.map((e) => e.path.join('.')).join(', ');
+      const missingVars = error.issues.map((e) => e.path.join('.')).join(', ');
       throw new Error(
         `Missing or invalid environment variables: ${missingVars}\n` +
         'Please check your .env.local file and ensure all required variables are set.'
@@ -43,5 +45,3 @@ export function getEnv(): Env {
 
 // Export validated env (only in server-side code)
 export const env = typeof window === 'undefined' ? getEnv() : ({} as Env);
-
-

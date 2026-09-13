@@ -123,7 +123,9 @@ export async function requestBackgroundSync(tag: string = 'sync-calixo-actions')
     const registration = await navigator.serviceWorker.ready;
     
     if ('sync' in registration) {
-      await registration.sync.register(tag);
+      await (registration as ServiceWorkerRegistration & {
+        sync: { register: (tag: string) => Promise<void> };
+      }).sync.register(tag);
       console.log('[SW] Background sync requested:', tag);
       return true;
     } else {

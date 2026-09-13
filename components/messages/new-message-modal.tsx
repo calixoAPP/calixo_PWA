@@ -1,14 +1,14 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
-import { AvatarPreview } from '@/components/avatar/avatar-preview';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { Spinner } from '@/components/ui/spinner';
 import { useDebounce } from '@/lib/hooks/use-debounce';
-import { getEnergyLevel } from '@/lib/avatar-energy';
 
 interface SearchResult {
   userId: string;
@@ -46,7 +46,7 @@ export function NewMessageModal({ open, onClose }: NewMessageModalProps) {
     const searchUsers = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
+        const response = await apiFetch(
           `/api/users/search?q=${encodeURIComponent(debouncedQuery)}`
         );
         if (!response.ok) throw new Error('Error al buscar usuarios');
@@ -71,7 +71,7 @@ export function NewMessageModal({ open, onClose }: NewMessageModalProps) {
   const handleStartChat = async (recipientId: string) => {
     setStartingChat(recipientId);
     try {
-      const response = await fetch('/api/messages/conversations', {
+      const response = await apiFetch('/api/messages/conversations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipientId }),
@@ -123,11 +123,7 @@ export function NewMessageModal({ open, onClose }: NewMessageModalProps) {
                 disabled={startingChat !== null}
                 className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-lg text-sm disabled:opacity-50"
               >
-                <AvatarPreview
-                  energyLevel={getEnergyLevel(user.avatarEnergy)}
-                  equippedItems={{}}
-                  size="sm"
-                />
+                <UserAvatar displayName={user.displayName} size="sm" />
                 <span className="font-medium text-gray-900 truncate">
                   {user.displayName}
                 </span>

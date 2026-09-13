@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
@@ -25,7 +26,7 @@ export function BannersClient({ initialBanners }: BannersClientProps) {
     if (!confirm('¿Eliminar este banner?')) return;
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/admin/banners/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/admin/banners/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setBanners((prev) => prev.filter((b) => b.id !== id));
         toast.success('Banner eliminado');

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -27,7 +28,7 @@ interface FeedPostProps {
       displayName: string;
       avatarEnergy: number;
       isPremium: boolean;
-      profilePhotoUrl: string | null;
+      profilePhotoUrl?: string | null;
     } | null;
     userChallenge: {
       id: number;
@@ -81,7 +82,7 @@ export function FeedPost({ post, currentUserId, onLike, onCommentAdded, standalo
 
   const checkLikeStatus = async () => {
     try {
-      const response = await fetch(`/api/feed/${post.feedItem.id}/like`);
+      const response = await apiFetch(`/api/feed/${post.feedItem.id}/like`);
       if (response.ok) {
         const data = await response.json();
         setIsLiked(data.isLiked || false);
@@ -106,7 +107,7 @@ export function FeedPost({ post, currentUserId, onLike, onCommentAdded, standalo
     setLocalLikes(prev => previousLiked ? prev - 1 : prev + 1);
 
     try {
-      const response = await fetch(`/api/feed/${post.feedItem.id}/like`, {
+      const response = await apiFetch(`/api/feed/${post.feedItem.id}/like`, {
         method: 'POST',
       });
 

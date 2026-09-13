@@ -15,9 +15,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand Section */}
           <div className="md:col-span-1">
-            <h3 className="text-2xl font-bold text-primary mb-4">Calixo</h3>
-            <p className="text-neutral text-sm">
-              La plataforma social para desconexión digital. Acepta retos, personaliza tu avatar CALI y comparte tu progreso.
+            <h3 className="text-2xl font-bold text-brand-yellow mb-4">Calixo</h3>
+            <p className="text-neutral-light text-sm">
+              Hub social de Calixo: feed, amigos, grupos y tienda. Los retos se completan en la app móvil.
             </p>
           </div>
 

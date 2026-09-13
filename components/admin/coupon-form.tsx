@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -53,7 +54,7 @@ export function CouponForm({ coupon }: CouponFormProps) {
     try {
       const formDataUpload = new FormData();
       formDataUpload.append('file', file);
-      const res = await fetch('/api/admin/coupons/upload', {
+      const res = await apiFetch('/api/admin/coupons/upload', {
         method: 'POST',
         body: formDataUpload,
       });

@@ -9,41 +9,34 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Calixo brand colors - Nuevo esquema
+        // Marca Calixo — alineado con iOS/Android (Color.kt / CalixoColors.swift)
         primary: {
-          DEFAULT: '#fe4b5b',
-          light: '#ff6b7a',
-          dark: '#e63946',
-          lighter: '#ff8a95',
-          darker: '#cc2e3a',
+          DEFAULT: '#3B3C3D',
+          light: '#6E6F70',
+          dark: '#1E1F20',
+          foreground: '#FFF753',
         },
-        // Colores complementarios al rojo/rosa principal
+        brand: {
+          yellow: '#FFF753',
+          gold: '#C9A227',
+          'gold-light': '#FFD84D',
+          'gold-dark': '#8A6E14',
+          ink: '#232425',
+        },
+        neutral: {
+          DEFAULT: '#6E6F70',
+          light: '#9C9D9E',
+          lighter: '#D2D2D1',
+          dark: '#3B3C3D',
+          darker: '#1E1F20',
+        },
         complementary: {
           emerald: {
             DEFAULT: '#10B981',
             light: '#34D399',
             dark: '#059669',
           },
-          turquoise: {
-            DEFAULT: '#06B6D4',
-            light: '#22D3EE',
-            dark: '#0891B2',
-          },
-          mint: {
-            DEFAULT: '#A7F3D0',
-            light: '#D1FAE5',
-            dark: '#6EE7B7',
-          },
         },
-        // Grises neutros para texto y bordes
-        neutral: {
-          DEFAULT: '#6B7280',
-          light: '#9CA3AF',
-          dark: '#4B5563',
-          lighter: '#D1D5DB',
-          darker: '#374151',
-        },
-        // Colores de acento
         accent: {
           green: {
             DEFAULT: '#10B981',
@@ -61,11 +54,14 @@ const config: Config = {
             dark: '#D97706',
           },
         },
-        // Texto oscuro
+        background: {
+          DEFAULT: '#FAFAFA',
+          surface: '#FFFFFF',
+        },
         text: {
-          DEFAULT: '#1F2937',
-          light: '#6B7280',
-          dark: '#111827',
+          DEFAULT: '#3B3C3D',
+          light: '#6E6F70',
+          dark: '#1E1F20',
         },
       },
       fontFamily: {
@@ -73,8 +69,10 @@ const config: Config = {
         serif: ['Trebuchet MS', 'Trebuchet', 'Arial', 'sans-serif'],
       },
       borderRadius: {
-        'xl': '1rem',
+        xl: '1rem',
         '2xl': '1.5rem',
+        card: '1.25rem',
+        control: '1rem',
       },
     },
   },
@@ -82,4 +80,3 @@ const config: Config = {
 };
 
 export default config;
-

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -36,7 +37,7 @@ export function UserTable() {
       if (search) params.set('search', search);
       if (premiumFilter === 'premium') params.set('isPremium', 'true');
       if (premiumFilter === 'free') params.set('isPremium', 'false');
-      const response = await fetch(`/api/admin/users?${params}`);
+      const response = await apiFetch(`/api/admin/users?${params}`);
       if (response.ok) {
         const data = await response.json();
         setUsers(data);
@@ -54,7 +55,7 @@ export function UserTable() {
   const togglePremium = async (userId: string, currentStatus: boolean) => {
     setTogglingId(userId);
     try {
-      const response = await fetch(`/api/admin/users/${userId}/premium`, {
+      const response = await apiFetch(`/api/admin/users/${userId}/premium`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isPremium: !currentStatus }),

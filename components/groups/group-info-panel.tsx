@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -56,7 +57,7 @@ export function GroupInfoPanel({ groupId }: GroupInfoPanelProps) {
   const [saving, setSaving] = useState(false);
 
   const fetchGroup = useCallback(async () => {
-    const res = await fetch(`/api/groups/${groupId}`);
+    const res = await apiFetch(`/api/groups/${groupId}`);
     if (!res.ok) throw new Error('not found');
     const data = await res.json();
     setGroup(data.group);
@@ -77,7 +78,7 @@ export function GroupInfoPanel({ groupId }: GroupInfoPanelProps) {
     if (!group) return;
     setSaving(true);
     try {
-      const res = await fetch(`/api/groups/${groupId}`, {
+      const res = await apiFetch(`/api/groups/${groupId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -112,7 +113,7 @@ export function GroupInfoPanel({ groupId }: GroupInfoPanelProps) {
       confirmVariant: 'destructive',
       onConfirm: async () => {
         try {
-          const res = await fetch(`/api/groups/${groupId}/members/${member.userId}`, {
+          const res = await apiFetch(`/api/groups/${groupId}/members/${member.userId}`, {
             method: 'DELETE',
           });
           const data = await res.json();
@@ -139,7 +140,7 @@ export function GroupInfoPanel({ groupId }: GroupInfoPanelProps) {
       confirmVariant: 'destructive',
       onConfirm: async () => {
         try {
-          const res = await fetch(`/api/groups/${groupId}`, { method: 'DELETE' });
+          const res = await apiFetch(`/api/groups/${groupId}`, { method: 'DELETE' });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error);
           toast.success('Grupo eliminado');

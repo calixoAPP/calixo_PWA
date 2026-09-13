@@ -10,7 +10,7 @@ interface GroupTabsProps {
 
 const tabs = [
   { href: 'chat', label: 'Chat' },
-  { href: 'challenge', label: 'Reto' },
+  { href: 'challenge', label: 'Reto (app)' },
   { href: 'stats', label: 'Estadísticas' },
 ];
 

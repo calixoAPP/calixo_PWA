@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { GroupListItem } from '@/components/groups/group-list-item';
@@ -19,7 +20,7 @@ export default function GroupsPage() {
 
   const fetchGroups = async () => {
     try {
-      const response = await fetch('/api/groups');
+      const response = await apiFetch('/api/groups');
       if (response.ok) {
         const data = await response.json();
         setGroups(data.groups || []);

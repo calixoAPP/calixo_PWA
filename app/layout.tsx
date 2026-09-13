@@ -8,7 +8,7 @@ import { ConfirmDialogProvider } from "@/components/ui/confirm-dialog";
 
 export const metadata: Metadata = {
   title: "Calixo - Desconexión Digital",
-  description: "Una PWA social para desconexión digital. Acepta retos diarios, personaliza tu avatar CALI y comparte tu progreso.",
+  description: "Hub social de Calixo: feed, amigos, grupos y tienda. Los retos y premium están en la app móvil.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -24,7 +24,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#fe4b5b",
+  themeColor: "#3B3C3D",
 };
 
 export default function RootLayout({

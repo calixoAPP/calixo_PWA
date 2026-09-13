@@ -1,15 +1,15 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
-import { AvatarPreview } from '@/components/avatar/avatar-preview';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import Link from 'next/link';
 import { useDebounce } from '@/lib/hooks/use-debounce';
-import { getEnergyLevel } from '@/lib/avatar-energy';
 import { Spinner } from '@/components/ui/spinner';
 
 interface SearchResult {
@@ -50,7 +50,7 @@ export default function SearchPage() {
   const searchUsers = async (searchQuery: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/users/search?q=${encodeURIComponent(searchQuery)}`);
+      const response = await apiFetch(`/api/users/search?q=${encodeURIComponent(searchQuery)}`);
       
       if (!response.ok) {
         throw new Error('Error al buscar usuarios');
@@ -95,7 +95,7 @@ export default function SearchPage() {
       if (hasPending) {
         const user = results.find(u => u.userId === userId);
         if (user?.pendingRequestId) {
-          const response = await fetch(`/api/follow/requests/${user.pendingRequestId}`, {
+          const response = await apiFetch(`/api/follow/requests/${user.pendingRequestId}`, {
             method: 'DELETE',
           });
 
@@ -121,7 +121,7 @@ export default function SearchPage() {
         }
       }
 
-      const response = await fetch('/api/follow', {
+      const response = await apiFetch('/api/follow', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -186,7 +186,7 @@ export default function SearchPage() {
 
   const handleMessage = async (recipientId: string) => {
     try {
-      const response = await fetch('/api/messages/conversations', {
+      const response = await apiFetch('/api/messages/conversations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipientId }),
@@ -269,11 +269,7 @@ export default function SearchPage() {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4">
                       {/* Avatar */}
                       <Link href={`/profile/${user.userId}`} className="flex-shrink-0">
-                        <AvatarPreview
-                          energyLevel={getEnergyLevel(user.avatarEnergy)}
-                          equippedItems={{}}
-                          size="sm"
-                        />
+                        <UserAvatar displayName={user.displayName} size="sm" />
                       </Link>
 
                       {/* User Info */}

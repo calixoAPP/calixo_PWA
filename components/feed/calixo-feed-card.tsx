@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,7 +34,7 @@ export function CalixoFeedCard() {
   const [hasBounced, setHasBounced] = useState(false);
 
   useEffect(() => {
-    fetch('/api/banners')
+    apiFetch('/api/banners')
       .then((res) => res.ok ? res.json() : [])
       .then((data: Banner[]) => {
         if (data && data.length > 0) {
@@ -84,7 +85,7 @@ export function CalixoFeedCard() {
 
   if (!banner) {
     return (
-      <Card className="overflow-hidden border-0 animate-pulse" style={{ backgroundColor: '#fe4b5b' }}>
+      <Card className="overflow-hidden border-0 animate-pulse" style={{ backgroundColor: '#3B3C3D' }}>
         <div className="aspect-square w-full bg-white/10" />
       </Card>
     );
@@ -98,13 +99,13 @@ export function CalixoFeedCard() {
         hasBounced && 'animate-calixo-bounce-in'
       )}
       style={{
-        backgroundColor: '#fe4b5b',
+        backgroundColor: '#3B3C3D',
       }}
     >
       {/* Header - CALIXO con logo */}
       <CardHeader
         className="pb-2 md:pb-3 border-b border-white/20 px-4 md:px-6 pt-4 md:pt-6"
-        style={{ backgroundColor: '#fe4b5b' }}
+        style={{ backgroundColor: '#3B3C3D' }}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-3">
@@ -160,17 +161,17 @@ export function CalixoFeedCard() {
       {/* Content */}
       <CardContent
         className="pt-3 md:pt-4 px-4 md:px-6"
-        style={{ backgroundColor: '#fe4b5b' }}
+        style={{ backgroundColor: '#3B3C3D' }}
       >
         <p className="text-white/95 text-center text-xs md:text-sm">
-          ¡Completa retos y gana recompensas!
+          Conecta con amigos y comparte tu progreso
         </p>
       </CardContent>
 
       {/* Footer */}
       <CardFooter
         className="flex justify-center border-t border-white/20 pt-2 md:pt-3 px-4 md:px-6"
-        style={{ backgroundColor: '#fe4b5b' }}
+        style={{ backgroundColor: '#3B3C3D' }}
       >
         <Link href="/challenges">
           <Button

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -230,7 +231,7 @@ export function ProfileSettingsModal({
         updateData.birthDate = null;
       }
 
-      const response = await fetch('/api/profile', {
+      const response = await apiFetch('/api/profile', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

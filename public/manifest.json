@@ -1,11 +1,11 @@
 {
   "name": "Calixo - Desconexión Digital",
   "short_name": "Calixo",
-  "description": "Una PWA social para desconexión digital. Acepta retos, personaliza tu avatar CALI y comparte tu progreso.",
+  "description": "Hub social de Calixo: feed, amigos, grupos y tienda. Los retos se completan en la app móvil.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F5F0E8",
-  "theme_color": "#5A8DEE",
+  "background_color": "#FAFAFA",
+  "theme_color": "#3B3C3D",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -60,31 +60,24 @@
   "categories": ["lifestyle", "social", "health"],
   "shortcuts": [
     {
-      "name": "Retos Diarios",
-      "short_name": "Retos",
-      "description": "Ver los retos diarios disponibles",
-      "url": "/challenges",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
-    },
-    {
       "name": "Feed Social",
       "short_name": "Feed",
-      "description": "Ver el feed de retos completados",
+      "description": "Ver el feed de la comunidad",
       "url": "/feed",
       "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Tienda CALI",
+      "name": "Tienda",
       "short_name": "Tienda",
-      "description": "Personaliza tu avatar CALI",
+      "description": "Canjear cupones con monedas",
       "url": "/store",
       "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Mi Avatar",
-      "short_name": "Avatar",
-      "description": "Editar mi avatar CALI",
-      "url": "/avatar",
+      "name": "Retos (app móvil)",
+      "short_name": "Retos",
+      "description": "Los retos están disponibles en la app móvil",
+      "url": "/challenges",
       "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ],
@@ -94,4 +87,3 @@
   "lang": "es",
   "dir": "ltr"
 }
-

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { signup } from '@/app/auth/actions';
+import { signup, signInWithGoogle } from '@/app/auth/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
@@ -852,7 +852,7 @@ export function SignupFormMultistep({ onToggleForm }: SignupFormMultistepProps =
         {step === 'credentials' && (
           <>
             <AuthFormDivider />
-            <form action={signup}>
+            <form action={signInWithGoogle}>
               <GoogleSignInButton />
             </form>
           </>

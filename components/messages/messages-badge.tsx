@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -25,7 +26,7 @@ export function MessagesBadge() {
 
   const fetchUnread = async () => {
     try {
-      const response = await fetch('/api/messages/unread-count');
+      const response = await apiFetch('/api/messages/unread-count');
       if (response.status === 401) {
         setUnreadCount(0);
         return;

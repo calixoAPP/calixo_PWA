@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { ProfilePhotoModal } from '@/components/profile/profile-photo-modal';
 import { ProfileSettingsModal } from '@/components/profile/profile-settings-modal';
 import { FollowersModal } from '@/components/profile/followers-modal';
-import { EnergyBanner } from '@/components/profile/energy-banner';
+import Link from 'next/link';
 import { PremiumBadge } from '@/components/profile/premium-badge';
 import { ProfilePostCard } from '@/components/profile/profile-post-card';
 import Image from 'next/image';
@@ -103,7 +104,7 @@ export default function ProfilePage() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/profile');
+      const response = await apiFetch('/api/profile');
       
       if (!response.ok) {
         if (response.status === 401) {
@@ -325,8 +326,23 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Banner de energía */}
-        <EnergyBanner energy={profile.avatarEnergy} />
+        {/* Accesos rápidos (alineado con app móvil) */}
+        <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-4">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/store">Tienda</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/store/purchased">Mis cupones</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/store/transactions">Historial de monedas</Link>
+          </Button>
+          {!profile.isPremium && (
+            <Button asChild variant="outline" size="sm">
+              <Link href="/subscription">Hazte Premium</Link>
+            </Button>
+          )}
+        </div>
 
         {/* Profile Photo Modal */}
         <ProfilePhotoModal
@@ -389,10 +405,10 @@ export default function ProfilePage() {
                 Aún no has compartido ninguna publicación.
               </p>
               <p className="text-sm text-gray-500 mt-2">
-                Completa retos y comparte tus logros para ver aquí tu timeline.
+                Completa retos en la app móvil y comparte tus logros para ver aquí tu timeline.
               </p>
               <Button asChild className="mt-4">
-                <a href="/challenges">Ir a retos</a>
+                <Link href="/challenges">Usar la app móvil</Link>
               </Button>
             </CardContent>
           </Card>

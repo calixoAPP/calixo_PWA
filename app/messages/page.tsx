@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { ConversationList } from '@/components/messages/conversation-list';
 import { NewMessageModal } from '@/components/messages/new-message-modal';
@@ -19,7 +20,7 @@ export default function MessagesPage() {
 
   const fetchConversations = async () => {
     try {
-      const response = await fetch('/api/messages/conversations');
+      const response = await apiFetch('/api/messages/conversations');
       if (response.ok) {
         const data = await response.json();
         setConversations(data.conversations || []);

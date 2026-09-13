@@ -45,7 +45,7 @@ export function ProfilePostCard({ feedItem, challenge }: ProfilePostCardProps) {
           sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 200px"
         />
       ) : (
-        <div className="absolute inset-0 flex items-center justify-center p-4 bg-[#fe4b5b]">
+        <div className="absolute inset-0 flex items-center justify-center p-4 bg-primary">
           <p className="text-sm text-white font-medium line-clamp-3 text-center">
             {feedItem.note || challenge?.title || 'Publicación'}
           </p>

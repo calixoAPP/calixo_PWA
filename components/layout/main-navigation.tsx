@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -8,7 +9,6 @@ import { signOut } from '@/app/auth/actions';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { NotificationBadge } from '@/components/notifications/notification-badge';
-import { ChallengeBadge } from '@/components/challenges/challenge-badge';
 import { MessagesBadge } from '@/components/messages/messages-badge';
 
 const navigationItems = [
@@ -16,8 +16,6 @@ const navigationItems = [
   { href: '/search', label: 'Búsqueda' },
   { href: '/messages', label: 'Mensajes' },
   { href: '/groups', label: 'Grupos' },
-  { href: '/challenges', label: 'Retos' },
-  { href: '/store', label: 'Tienda' },
   { href: '/profile', label: 'Perfil' },
   { href: '/notifications', label: 'Notificaciones' },
 ];
@@ -62,28 +60,6 @@ const mobileNavigationItems = [
         <circle cx="9" cy="7" r="4"/>
         <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
-    )
-  },
-  { 
-    href: '/challenges', 
-    label: 'Retos',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-        <circle cx="12" cy="12" r="10"/>
-        <circle cx="12" cy="12" r="6"/>
-        <circle cx="12" cy="12" r="2"/>
-      </svg>
-    )
-  },
-  { 
-    href: '/store', 
-    label: 'Tienda',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-        <path d="M3 6h18"/>
-        <path d="M16 10a4 4 0 0 1-8 0"/>
       </svg>
     )
   },
@@ -203,7 +179,7 @@ export function MainNavigation() {
       setIsAdmin(false);
       return;
     }
-    fetch('/api/admin/check')
+    apiFetch('/api/admin/check')
       .then((res) => res.ok ? res.json() : { isAdmin: false })
       .then((data) => setIsAdmin(data?.isAdmin === true))
       .catch(() => setIsAdmin(false));
@@ -267,10 +243,8 @@ export function MainNavigation() {
               {navigationItems.map((item) => {
                 const isActive = pathname === item.href || 
                   (item.href !== '/feed' && item.href !== '/profile' && pathname?.startsWith(item.href)) ||
-                  (item.href === '/challenges' && (pathname === '/challenges' || pathname?.startsWith('/challenges/'))) ||
-                  (item.href === '/profile' && pathname === '/profile');
+                  (item.href === '/profile' && (pathname === '/profile' || pathname?.startsWith('/store')));
                 const isNotifications = item.href === '/notifications';
-                const isChallenges = item.href === '/challenges';
                 const isMessages = item.href === '/messages';
                 
                 return (
@@ -301,11 +275,6 @@ export function MainNavigation() {
                     {isMessages && (
                       <span className="absolute top-0 right-0">
                         <MessagesBadge />
-                      </span>
-                    )}
-                    {isChallenges && (
-                      <span className="absolute top-0 right-0">
-                        <ChallengeBadge />
                       </span>
                     )}
                     {isActive && (
@@ -356,7 +325,7 @@ export function MainNavigation() {
                   type="submit"
                   className={cn(
                     'px-4 py-2 text-sm font-medium transition-all duration-200 rounded-full',
-                    'bg-primary text-white hover:bg-primary-dark',
+                    'bg-primary text-primary-foreground hover:bg-primary-dark',
                     'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
                     'shadow-sm hover:shadow-md'
                   )}
@@ -406,10 +375,8 @@ export function MainNavigation() {
           {mobileNavigationItems.map((item) => {
             const isActive = pathname === item.href || 
               (item.href !== '/feed' && item.href !== '/profile' && pathname?.startsWith(item.href)) ||
-              (item.href === '/challenges' && (pathname === '/challenges' || pathname?.startsWith('/challenges/'))) ||
-              (item.href === '/profile' && pathname === '/profile');
+              (item.href === '/profile' && (pathname === '/profile' || pathname?.startsWith('/store')));
             const isNotifications = item.href === '/notifications';
-            const isChallenges = item.href === '/challenges';
             const isMessages = item.href === '/messages';
             
             return (
@@ -453,11 +420,6 @@ export function MainNavigation() {
                   {isMessages && (
                     <span className="absolute top-0 right-0">
                       <MessagesBadge />
-                    </span>
-                  )}
-                  {isChallenges && (
-                    <span className="absolute top-0 right-0">
-                      <ChallengeBadge />
                     </span>
                   )}
                 </div>

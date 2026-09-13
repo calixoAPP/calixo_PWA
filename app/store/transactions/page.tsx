@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -53,7 +54,7 @@ export default function TransactionsPage() {
       const params = new URLSearchParams();
       if (filter !== 'all') params.append('type', filter);
 
-      const response = await fetch(`/api/transactions?${params}`);
+      const response = await apiFetch(`/api/transactions?${params}`);
       if (!response.ok) {
         throw new Error('Error al cargar transacciones');
       }

@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -123,7 +124,7 @@ export function FeedPage() {
 
   const handleLike = async (feedItemId: number) => {
     try {
-      const response = await fetch(`/api/feed/${feedItemId}/like`, {
+      const response = await apiFetch(`/api/feed/${feedItemId}/like`, {
         method: 'POST',
       });
 

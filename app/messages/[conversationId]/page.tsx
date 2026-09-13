@@ -1,5 +1,6 @@
 'use client';
 
+import { apiFetch } from '@/lib/api/client';
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -12,7 +13,7 @@ export default function ConversationPage({ params }: { params: Promise<{ convers
   const [otherUserName, setOtherUserName] = useState<string>('');
 
   useEffect(() => {
-    fetch('/api/messages/conversations')
+    apiFetch('/api/messages/conversations')
       .then((r) => r.json())
       .then((data) => {
         const conv = (data.conversations || []).find(
