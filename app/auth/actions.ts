@@ -555,7 +555,8 @@ export async function resetPassword(
     const supabase = await createClient();
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password/confirm`,
+      // La misma página que usan las apps: calixo.es, donde se elige la contraseña nueva.
+      redirectTo: 'https://calixo.es/cuenta/nueva-contrasena',
     });
 
     if (error) {
