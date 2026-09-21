@@ -3,9 +3,10 @@
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { z } from 'zod';
-import { loginSchema, signupSchema, resetPasswordSchema } from '@/lib/validations/auth';
+import { loginSchema, signupSchema, resetPasswordSchema, updatePasswordSchema } from '@/lib/validations/auth';
+import { RECOVERY_COOKIE } from '@/lib/auth/recovery';
 
 export type AuthActionState = {
   error?: string;
@@ -554,10 +555,26 @@ export async function resetPassword(
     const { email } = validatedFields.data;
     const supabase = await createClient();
 
+    // El enlace vuelve a esta misma web: el código del correo (flujo PKCE) solo se puede
+    // canjear en el navegador que lo pidió, que es donde queda la otra mitad del secreto.
+    const headerList = await headers();
+    const origin =
+      headerList.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? `https://${headerList.get('host')}`;
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      // La misma página que usan las apps: calixo.es, donde se elige la contraseña nueva.
-      redirectTo: 'https://calixo.es/cuenta/nueva-contrasena',
+      redirectTo: `${origin}/auth/callback`,
     });
+
+    if (!error) {
+      // Marca para que /auth/callback sepa que esta vuelta es para cambiar la contraseña.
+      (await cookies()).set(RECOVERY_COOKIE, '1', {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: true,
+        path: '/',
+        maxAge: 60 * 60,
+      });
+    }
 
     if (error) {
       return {
@@ -578,3 +595,42 @@ export async function resetPassword(
   }
 }
 
+
+/**
+ * Guarda la contraseña nueva tras volver del correo de recuperación. La sesión ya la abrió
+ * /auth/callback al canjear el código del enlace.
+ */
+export async function updatePassword(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const validatedFields = updatePasswordSchema.safeParse({
+    password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
+  });
+
+  if (!validatedFields.success) {
+    return { error: validatedFields.error.issues[0].message, success: false };
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) {
+    return {
+      error: 'El enlace ha caducado. Vuelve a pedir el correo para cambiar la contraseña.',
+      success: false,
+    };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password: validatedFields.data.password });
+  if (error) {
+    return {
+      error: error.message.includes('different from the old')
+        ? 'La nueva contraseña tiene que ser distinta de la anterior.'
+        : 'No hemos podido cambiar la contraseña. Inténtalo de nuevo.',
+      success: false,
+    };
+  }
+
+  return { success: true, message: 'Contraseña cambiada' };
+}

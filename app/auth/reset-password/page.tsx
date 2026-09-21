@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { resetPassword } from '@/app/auth/actions';
@@ -11,6 +11,11 @@ import { Input } from '@/components/ui/input';
 /** "¿Olvidaste tu contraseña?": manda el enlace para elegir una nueva en calixo.es. */
 export default function ResetPasswordPage() {
   const [state, formAction, pending] = useActionState(resetPassword, {});
+  // /auth/callback devuelve aquí si el enlace del correo ya no sirve.
+  const [linkExpired, setLinkExpired] = useState(false);
+  useEffect(() => {
+    setLinkExpired(new URLSearchParams(window.location.search).get('error') === 'expired');
+  }, []);
 
   return (
     <AuthLayout>
@@ -50,6 +55,15 @@ export default function ResetPasswordPage() {
                 placeholder="Correo electrónico"
                 className="bg-neutral/5 border-neutral/20 h-12"
               />
+
+              {linkExpired && !state.error && (
+                <div
+                  className="p-3 text-sm text-accent-red bg-accent-red/10 border border-accent-red/20 rounded-xl"
+                  role="alert"
+                >
+                  El enlace ha caducado o ya se usó. Pide otro correo.
+                </div>
+              )}
 
               {state.error && (
                 <div

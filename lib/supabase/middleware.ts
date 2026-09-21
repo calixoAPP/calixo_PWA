@@ -54,6 +54,9 @@ export async function updateSession(request: NextRequest) {
   // Protect routes that require authentication
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
   const isVerifyEmailPage = request.nextUrl.pathname === '/auth/verify-email';
+  // Se llega con la sesión que abre el enlace del correo de recuperar contraseña: no hay que
+  // echar al usuario a la portada antes de que elija la nueva.
+  const isNewPasswordPage = request.nextUrl.pathname === '/auth/reset-password/nueva';
   const isProtectedRoute = 
     request.nextUrl.pathname.startsWith('/profile') ||
     request.nextUrl.pathname.startsWith('/challenges') ||
@@ -89,7 +92,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // If user is authenticated and email is verified, redirect away from auth pages (except verify-email)
-  if (user && isEmailVerified && isAuthPage && !isVerifyEmailPage) {
+  if (user && isEmailVerified && isAuthPage && !isVerifyEmailPage && !isNewPasswordPage) {
     // Allow access to verify-email page even if verified (for checking status)
     const url = request.nextUrl.clone();
     url.pathname = '/';

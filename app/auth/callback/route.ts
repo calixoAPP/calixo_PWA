@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
+import { RECOVERY_COOKIE } from '@/lib/auth/recovery';
 
 /**
  * OAuth callback route
@@ -13,7 +14,15 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await createClient();
-    const { data } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    // Vuelta del correo de "¿Olvidaste tu contraseña?": a elegir la nueva.
+    if (request.cookies.get(RECOVERY_COOKIE)) {
+      const destination = error ? '/auth/reset-password?error=expired' : '/auth/reset-password/nueva';
+      const response = NextResponse.redirect(`${origin}${destination}`);
+      response.cookies.delete(RECOVERY_COOKIE);
+      return response;
+    }
     
     // Check if email is verified
     const isEmailVerified = data.user?.email_confirmed_at !== null && data.user?.email_confirmed_at !== undefined;
